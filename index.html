@@ -21,9 +21,42 @@
 
   <section class="search"></section>
   <section class="buyer"></section>
-  <section class="seller"></section>
+  <section class="seller">
+    <i class="fa-solid fa-circle-xmark closeSeller"></i>
+
+     <form>
+      <label for="sellerName">Your Name</label>
+      <input type="text" id="sellerName" required>
+
+      <label for="productName">product Name</label>
+      <input type="text" id="productName" required>
+
+      <label for="category">Category</label>
+      <select name="cars" id="category">
+        <option value="volvo">Volvo</option>
+        <option value="saab">Saab</option>
+        <option value="opel">Opel</option>
+        <option value="audi">Audi</option>
+      </select>
+
+      <label for="price">Price</label>
+      <input type="text" id="price" required>
+
+      <label for="imgLink">Image Link</label>
+      <input type="text" id="imgLink" required>
+
+      <button type="submit" class="submit">Submit</button>
+      <button type="reset">Reset</button>
+    </form>
+
+    <section class="sellerProducts">
+
+    </section>
+
+
+  </section>
   <section class="cart"></section>
-  <button class="addProduct"></button>
+  <i class="fa-solid fa-circle-plus addProduct"></i>
   
 </main>
 
