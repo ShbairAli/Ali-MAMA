@@ -12,12 +12,21 @@
       <h1 class="logo"></h1>
       <nav>
         <i class="navIcon"></i>
-        <section class="categories"></section>
+        <ul class="categories">
+          <button class="clearFilterBtn">Clear All Filters</button>
+          <li class="computer">Computer</li>
+          <li class="tablet">Tablet</li>
+          <li class="mobile">Mobile</li>
+          <li class="fablet">Fablet</li>
+        </ul>
       </nav>
     </header>
 
     <main>
-      <section class="search"></section>
+      <section class="searchArea">
+        <input type="text" class="searchInput" placeholder="type the product">
+        <button class="searchBtn">Search</button>
+      </section>
       <section class="buyer">
         <!-- <div class="card">
           <img src="" alt="" />
@@ -36,38 +45,41 @@
           </div>
         </div> -->
       </section>
+
+
       <section class="seller">
         <i class="fa-solid fa-circle-xmark closeSeller"></i>
 
         <form>
           <label for="sellerName">Your Name</label>
           <input type="text" id="sellerName" required />
-
           <label for="productName">product Name</label>
           <input type="text" id="productName" required />
-
           <label for="category">Category</label>
           <select name="cars" id="category">
-            <option value="volvo">Volvo</option>
-            <option value="saab">Saab</option>
-            <option value="opel">Opel</option>
-            <option value="audi">Audi</option>
+            <option value="Computer">Computer</option>
+            <option value="Tablet">Tablet</option>
+            <option value="Mobile">Mobile</option>
+            <option value="Fablet">Fablet</option>
           </select>
-
           <label for="price">Price</label>
           <input type="text" id="price" required />
-
           <label for="imgLink">Image Link</label>
           <input type="text" id="imgLink" required />
-
           <button type="submit" class="submit">Submit</button>
           <button type="reset">Reset</button>
         </form>
 
+
         <section class="sellerProducts"></section>
       </section>
-      <section class="cart"></section>
-      <i class="fa-solid fa-circle-plus addProduct"></i>
+
+
+      <section class="cart">
+        <p>-----------CART---------</p>
+        
+      </section>
+      <i class="fa-solid fa-circle-plus openSeller"></i>
     </main>
 
     <script
