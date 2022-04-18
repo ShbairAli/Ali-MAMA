@@ -6,6 +6,7 @@ const closeSeller = document.querySelector(".closeSeller");
 const submit = document.querySelector(".submit");
 const buyer = document.querySelector(".buyer");
 const cart = document.querySelector(".cart");
+totalPrice = document.querySelector('.totalPrice')
 // object
 let sellerName = document.querySelector("#sellerName");
 let productName = document.querySelector("#productName");
@@ -25,19 +26,19 @@ const searchBtn = document.querySelector(".searchBtn");
 let staticArray = [
   {
     id: 1,
-    sellerName: "a",
-    productName: "a",
+    sellerName: "AliSeller",
+    productName: "AliName",
     category: "Mobile",
-    price: "a",
+    price: "30$",
     imgLink: "",
     qty: 0,
   },
   {
     id: 2,
-    sellerName: "b",
-    productName: "b",
+    sellerName: "wadiaSeller",
+    productName: "WadiaName",
     category: "Computer",
-    price: "a",
+    price: "25$",
     imgLink: "",
     qty: 0,
   },
@@ -49,7 +50,7 @@ let id = 10;
 let addToCartBtn;
 
 //! --------------------------------Build Standard Product Card--------------------------------
-function createCard(section, cardName, quantity) {
+function createCard(section, product, price, quantity) {
   let card = document.createElement("div");
   card.classList.add("card");
   section.appendChild(card);
@@ -60,7 +61,13 @@ function createCard(section, cardName, quantity) {
 
   let cardTitle = document.createElement("h3");
   card.appendChild(cardTitle);
-  cardTitle.textContent = cardName;
+  cardTitle.classList.add('productName')
+  cardTitle.textContent = product;
+
+  const productPrice = document.createElement('p')
+  card.appendChild(productPrice);
+  card.classList.add('price')
+  productPrice.textContent = price;
 
   let addToCartBtn = document.createElement("button");
   card.appendChild(addToCartBtn);
@@ -108,12 +115,12 @@ function createCard(section, cardName, quantity) {
     // 1 remove function of Cart Section
     if (section === cart) {
       function removeFromCart() {
-        console.log(card);
         card.remove();
         cartArray = JSON.parse(localStorage.getItem("cartKey"));
         // removedTarget = e.target.parentElement.parentElement.previousElementSibling.previousElementSibling
         cartArray.forEach((e, i) => {
-          if (cardTitle.textContent == e.sellerName) cartArray.splice(i, 1);
+          console.log(cardTitle);
+          if (cardTitle.textContent == e.productName) cartArray.splice(i, 1);
         });
         localStorage.setItem("cartKey", JSON.stringify(cartArray));
       }
@@ -135,11 +142,11 @@ function createCard(section, cardName, quantity) {
     // }
   }
 
-  //? Edit Function
-  sellerEdit.addEventListener("click", editProduct);
-  function editProduct() {
-    console.log("aaa");
-  }
+  // //? Edit Function
+  // sellerEdit.addEventListener("click", editProduct);
+  // function editProduct() {
+  //   console.log("aaa");
+  // }
 
   //? show, disable buttons accordingly
   if (section === buyer) {
@@ -153,7 +160,7 @@ function createCard(section, cardName, quantity) {
 //! --------------------------------Buyer Section--------------------------------
 // show static products
 staticArray.forEach((e) => {
-  createCard(buyer, e.sellerName, e.qty);
+  createCard(buyer, e.productName, e.price);
 });
 
 // show seller form
@@ -177,6 +184,7 @@ function addProduct(e) {
   let productObject = {};
   productObject.id = id += 1;
   productObject.sellerName = sellerName.value;
+  console.log(productName);
   productObject.productName = productName.value;
   productObject.category = category.value;
   productObject.price = price.value;
@@ -187,7 +195,7 @@ function addProduct(e) {
   staticArray.push(productObject);
   // show combined products
   staticArray.forEach((e) => {
-    createCard(buyer, e.sellerName, e.qty);
+    createCard(buyer, e.productName, e.price);
   });
   // set combined products into local storage
   saveToLocal();
@@ -210,7 +218,7 @@ function filterCat(category) {
   });
   deleteCards();
   // show only new filter
-  filterArray.forEach((e) => createCard(buyer, e.sellerName, e.qty));
+  filterArray.forEach((e) => createCard(buyer, e.productName, e.price));
   filterKey = localStorage.setItem("filterKey", JSON.stringify(filterArray));
 }
 
@@ -223,7 +231,7 @@ function clearFilter() {
   // reCreate all products
   productsKey = JSON.parse(localStorage.getItem("productsKey"));
   productsKey.forEach((e) => {
-    createCard(buyer, e.sellerName, e.qty);
+    createCard(buyer, e.productName, e.price);
   });
 }
 
@@ -239,7 +247,7 @@ function searchProduct() {
     return e.productName === searchInput.value;
   });
   deleteCards();
-  searchArray.forEach((e) => createCard(buyer, e.sellerName, e.qty));
+  searchArray.forEach((e) => createCard(buyer, e.productName, e.price));
   filterKey = localStorage.setItem("filterKey", JSON.stringify(searchArray));
   searchInput.value = "";
 }
@@ -249,16 +257,14 @@ function addToCart(e) {
   if (!productsKey) {
     saveToLocal();
   }
-  let targetCard = e.target.previousElementSibling.textContent;
+  let targetCard = e.target.previousElementSibling.previousElementSibling.textContent;
   productsKey = JSON.parse(localStorage.getItem("productsKey"));
-  productsKey
-    .filter((e) => {
-      if (targetCard === e.sellerName) {
-        cartArray.push(e);
-      }
-      return targetCard === e.sellerName;
-    })
-    .forEach((e) => createCard(cart, e.sellerName, e.qty));
+  productsKey.filter((e) => {
+    if (targetCard === e.productName) {
+      cartArray.push(e);
+    }
+    return targetCard === e.productName;
+  }).forEach((e) => createCard(cart, e.productName, e.price));
   localStorage.setItem("cartKey", JSON.stringify(cartArray));
 } // end AddToCart Fun
 
@@ -285,7 +291,7 @@ function onReload() {
   if (JSON.parse(localStorage.getItem("filterKey"))) {
     deleteCards();
     filterKey = JSON.parse(localStorage.getItem("filterKey"));
-    filterKey.forEach((e) => createCard(buyer, e.sellerName, e.qty));
+    filterKey.forEach((e) => createCard(buyer, e.productName, e.price));
   } else {
     // if localStorage not existed, do nothing (static dom will be already built)
     if (!JSON.parse(localStorage.getItem("productsKey"))) return;
@@ -293,12 +299,12 @@ function onReload() {
     deleteCards();
     productsKey = JSON.parse(localStorage.getItem("productsKey"));
     productsKey.forEach((e) => {
-      createCard(buyer, e.sellerName, e.qty);
+      createCard(buyer, e.productName, e.price);
     });
   }
   // if cartKey exists, re-create it
   if (JSON.parse(localStorage.getItem("cartKey"))) {
     cartKey = JSON.parse(localStorage.getItem("cartKey"));
-    cartKey.forEach((e) => createCard(cart, e.sellerName, e.qty));
+    cartKey.forEach((e) => createCard(cart, e.productName, e.price));
   }
 } // End of reload function
