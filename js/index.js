@@ -8,6 +8,7 @@ const cart = document.querySelector('.cart');
 // object 
 let sellerName = document.querySelector('#sellerName')
 let productName = document.querySelector('#productName')
+console.log(productName);
 let category = document.querySelector('#category')
 let price = document.querySelector('#price')
 let imgLink = document.querySelector('#imgLink')
@@ -33,8 +34,9 @@ let staticArray = [{
 }]
 let productsKey;
 let filterKey;
-let cartKey;
+let cartArray = []
 let id = 10;
+let addToCartBtn;
 
 //! --------------------------------Build Standard Product Card--------------------------------
 function createCard(section, cardName, quantity) {
@@ -87,14 +89,18 @@ function createCard(section, cardName, quantity) {
     let sellerEdit = document.createElement('button');
     sellerEdit.textContent = 'Edit';
     sellerBtns.appendChild(sellerEdit);
-}
 
+}
 
 //! --------------------------------Buyer Section--------------------------------
 // show Static Products
 staticArray.forEach(e => {
     createCard(buyer, e.sellerName, e.qty);
 });
+addToCartBtn = document.querySelectorAll('.addToCart');
+for (let i = 0; i < addToCartBtn.length; i++) {
+    addToCartBtn[i].addEventListener('click', addToCart)
+}
 // show seller form
 openSeller.addEventListener('click', function () {
     sellerSection.style.display = 'block';
@@ -130,6 +136,11 @@ function addProduct(e) {
     })
     // set combined products into local storage
     saveToLocal()
+
+    addToCartBtn = document.querySelectorAll('.addToCart');
+    for (let i = 0; i < addToCartBtn.length; i++) {
+        addToCartBtn[i].addEventListener('click', addToCart)
+    }
 }
 
 
@@ -188,28 +199,25 @@ function searchProduct() {
 }
 
 //! --------------------------------Card Buttons Functions--------------------------------
-const addToCartBtn = document.querySelectorAll('.addToCart');
-for(let i = 0; i<addToCartBtn.length; i++){
-    addToCartBtn[i].addEventListener('click', addToCart)
-   
-
-}
-
-let cartArray = []
-function addToCart(e){
+function addToCart(e) {
+    // console.log(addToCartBtn);
     if (!productsKey) {
         saveToLocal();
     }
     let targetCard = e.target.previousElementSibling.textContent
     productsKey = JSON.parse(localStorage.getItem("productsKey"));
-    cartArray = productsKey.filter((e)=>{
-        return targetCard === e.productName 
-        })
-    cartArray.forEach(e => createCard(cart, e.sellerName, e.qty))
-    cartKey = localStorage.setItem('cartKey', JSON.stringify(cartArray))
+    // console.log(productsKey);
+    console.log(targetCard);
+    productsKey.filter((e) => {
+        console.log(e.productName);
+        if (targetCard === e.sellerName) {
+            cartArray.push(e)
+        }
+        return targetCard === e.sellerName
+    }).forEach(e => createCard(cart, e.sellerName, e.qty))
 
+    localStorage.setItem('cartKey', JSON.stringify(cartArray))
 } // end AddToCart Fun
-
 
 //! --------------------------------Save to Local Storage-------------------------------- 
 function saveToLocal() {
@@ -246,7 +254,7 @@ function onReload() {
     // if cartKey exists, re create it 
     if (JSON.parse(localStorage.getItem("cartKey"))) {
         cartKey = JSON.parse(localStorage.getItem("cartKey"))
-        cartKey.forEach(e => createCard(buyer, e.sellerName, e.qty))
+        cartKey.forEach(e => createCard(cart, e.sellerName, e.qty))
     }
 
 } // End of reload function
