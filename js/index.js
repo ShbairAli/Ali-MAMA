@@ -6,7 +6,8 @@ const closeSeller = document.querySelector(".closeSeller");
 const submit = document.querySelector(".submit");
 const buyer = document.querySelector(".buyer");
 const cart = document.querySelector(".cart");
-totalPrice = document.querySelector('.totalPrice')
+let totalPrice = document.querySelector(".totalPrice");
+let productsCount = document.querySelector(".productsCount");
 // object
 let sellerName = document.querySelector("#sellerName");
 let productName = document.querySelector("#productName");
@@ -26,19 +27,19 @@ const searchBtn = document.querySelector(".searchBtn");
 let staticArray = [
   {
     id: 1,
-    sellerName: "AliSeller",
-    productName: "AliName",
+    sellerName: "Ahmed",
+    productName: "iPhone",
     category: "Mobile",
-    price: "30$",
+    price: "1200$",
     imgLink: "",
     qty: 0,
   },
   {
     id: 2,
-    sellerName: "wadiaSeller",
-    productName: "WadiaName",
+    sellerName: "Ali",
+    productName: "MSI",
     category: "Computer",
-    price: "25$",
+    price: "1500$",
     imgLink: "",
     qty: 0,
   },
@@ -47,7 +48,7 @@ let productsKey;
 let filterKey;
 let cartArray = [];
 let id = 10;
-let addToCartBtn;
+let pCount = 0
 
 //! --------------------------------Build Standard Product Card--------------------------------
 function createCard(section, product, price, quantity) {
@@ -61,20 +62,19 @@ function createCard(section, product, price, quantity) {
 
   let cardTitle = document.createElement("h3");
   card.appendChild(cardTitle);
-  cardTitle.classList.add('productName')
+  cardTitle.classList.add("productName");
   cardTitle.textContent = product;
 
-  const productPrice = document.createElement('p')
+  const productPrice = document.createElement("p");
   card.appendChild(productPrice);
-  card.classList.add('price')
+  card.classList.add("price");
   productPrice.textContent = price;
 
   let addToCartBtn = document.createElement("button");
   card.appendChild(addToCartBtn);
-  // addToCartBtn.classList.add('addToCart')
+  addToCartBtn.classList.add('addToCart')
   addToCartBtn.textContent = "Add to Cart";
-  addToCartBtn.addEventListener("click", addToCart);
-
+  
   let cardBtns = document.createElement("div");
   cardBtns.classList.add("cardBtns");
   card.appendChild(cardBtns);
@@ -116,10 +116,11 @@ function createCard(section, product, price, quantity) {
     if (section === cart) {
       function removeFromCart() {
         card.remove();
+        productsCount.textContent--;
+        localStorage.setItem("countKey", productsCount.textContent);
         cartArray = JSON.parse(localStorage.getItem("cartKey"));
         // removedTarget = e.target.parentElement.parentElement.previousElementSibling.previousElementSibling
         cartArray.forEach((e, i) => {
-          console.log(cardTitle);
           if (cardTitle.textContent == e.productName) cartArray.splice(i, 1);
         });
         localStorage.setItem("cartKey", JSON.stringify(cartArray));
@@ -155,13 +156,18 @@ function createCard(section, product, price, quantity) {
     addToCartBtn.style.display = "none";
     sellerEdit.style.display = "none";
   }
-}
+} // End DOM
 
 //! --------------------------------Buyer Section--------------------------------
 // show static products
+
 staticArray.forEach((e) => {
   createCard(buyer, e.productName, e.price);
 });
+let addToCartBtn = document.querySelectorAll('.addToCart')
+  for(let i = 0; i<addToCartBtn.length; i++){
+    addToCartBtn[i].addEventListener("click", addToCart);
+  }
 
 // show seller form
 openSeller.addEventListener("click", function () {
@@ -180,11 +186,14 @@ function addProduct(e) {
   e.preventDefault();
   // first remove old static products
   deleteCards();
+  if (JSON.parse(localStorage.getItem("cartKey"))) {
+        cartKey = JSON.parse(localStorage.getItem("cartKey"));
+        cartKey.forEach((e) => createCard(cart, e.productName, e.price))
+  }
   // fill the product objects by seller form info
   let productObject = {};
   productObject.id = id += 1;
   productObject.sellerName = sellerName.value;
-  console.log(productName);
   productObject.productName = productName.value;
   productObject.category = category.value;
   productObject.price = price.value;
@@ -198,6 +207,11 @@ function addProduct(e) {
     createCard(buyer, e.productName, e.price);
   });
   // set combined products into local storage
+
+  let addToCartBtn = document.querySelectorAll('.addToCart')
+  for(let i = 0; i<addToCartBtn.length; i++){
+    addToCartBtn[i].addEventListener("click", addToCart);
+  }
   saveToLocal();
 }
 
@@ -220,6 +234,10 @@ function filterCat(category) {
   // show only new filter
   filterArray.forEach((e) => createCard(buyer, e.productName, e.price));
   filterKey = localStorage.setItem("filterKey", JSON.stringify(filterArray));
+  // if (JSON.parse(localStorage.getItem("cartKey"))) {
+  //   cartKey = JSON.parse(localStorage.getItem("cartKey"));
+  //   cartKey.forEach((e) => createCard(cart, e.productName, e.price))
+  // }
 }
 
 // clear filters
@@ -237,7 +255,6 @@ function clearFilter() {
 
 //! --------------------------------SEARCH--------------------------------
 searchBtn.addEventListener("click", searchProduct);
-
 function searchProduct() {
   if (!productsKey) {
     saveToLocal();
@@ -257,15 +274,21 @@ function addToCart(e) {
   if (!productsKey) {
     saveToLocal();
   }
-  let targetCard = e.target.previousElementSibling.previousElementSibling.textContent;
+  pCount += 1
+  productsCount.textContent = pCount;
+  let targetCard =
+    e.target.previousElementSibling.previousElementSibling.textContent;
   productsKey = JSON.parse(localStorage.getItem("productsKey"));
-  productsKey.filter((e) => {
-    if (targetCard === e.productName) {
-      cartArray.push(e);
-    }
-    return targetCard === e.productName;
-  }).forEach((e) => createCard(cart, e.productName, e.price));
+  productsKey
+    .filter((e) => {
+      if (targetCard === e.productName) {
+        cartArray.push(e);
+      }
+      return targetCard === e.productName;
+    })
+    .forEach((e) => createCard(cart, e.productName, e.price));
   localStorage.setItem("cartKey", JSON.stringify(cartArray));
+  localStorage.setItem("countKey", pCount);
 } // end AddToCart Fun
 
 //! --------------------------------Save to Local Storage--------------------------------
@@ -280,7 +303,7 @@ function saveToLocal() {
 function deleteCards() {
   let currentCards = document.querySelectorAll(".card");
   for (let i = 0; i < currentCards.length; i++) {
-    currentCards[i].remove();
+      currentCards[i].remove();
   }
 }
 
@@ -303,8 +326,33 @@ function onReload() {
     });
   }
   // if cartKey exists, re-create it
+  
   if (JSON.parse(localStorage.getItem("cartKey"))) {
     cartKey = JSON.parse(localStorage.getItem("cartKey"));
-    cartKey.forEach((e) => createCard(cart, e.productName, e.price));
+    cartKey.forEach((e) => createCard(cart, e.productName, e.price))
+    countKey = JSON.parse(localStorage.getItem("countKey"));
+    productsCount.textContent = countKey;
+    let addToCartBtn = document.querySelectorAll('.addToCart')
+    for(let i = 0; i<addToCartBtn.length; i++){
+    addToCartBtn[i].addEventListener("click", cartIssue);
   }
+  function cartIssue(e){
+    let targetCard =
+    e.target.previousElementSibling.previousElementSibling.textContent;
+    productsKey = JSON.parse(localStorage.getItem("productsKey"));
+    productsKey
+    .filter((e) => {
+      if (targetCard === e.productName) {
+        cartKey.push(e);
+      }
+      return targetCard === e.productName;
+    })
+    .forEach((e) => createCard(cart, e.productName, e.price));
+  localStorage.setItem("cartKey", JSON.stringify(cartKey));
+  countKey += 1
+  productsCount.textContent = countKey;
+  localStorage.setItem('countKey', countKey)
+  }
+  } // end cartKey on reload
+ 
 } // End of reload function
