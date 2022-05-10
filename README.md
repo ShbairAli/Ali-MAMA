@@ -3,7 +3,7 @@
 
 ## You can check it out [**Here**](https://mama-bootcamp.github.io/Ali-MAMA/).
 
-E-Commerce website that has all features you can ever imagine in one place ...
+E-Commerce website that has all features you can ever imagine in one place, inspired by the "Ali Baba" real store 
 
 ## Running the project locally :hotel: <span id="usage"></span>
 
